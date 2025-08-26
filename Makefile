@@ -12,3 +12,6 @@ client: # Run this after making changes to the client code
 
 start: client # Starts both app one and app two
 	@make -j2 start_server start_cypress
+
+start_playright: # Opens the playwright test runner
+	cd client && npx playwright test --ui

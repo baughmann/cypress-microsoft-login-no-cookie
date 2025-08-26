@@ -75,22 +75,35 @@ def exchange_code_for_token(request: Request, code: str, state: str) -> dict[str
             detail="No auth flow found in session",
         )
 
+    # This is a dangerous bypass that works in cypress. Playwright does not need it and we are free to use the real auth code flow.
+    # token = client_app.acquire_token_by_username_password(
+    #     username=os.getenv("MICROSOFT_LOGIN_EMAIL"),
+    #     password=os.getenv("MICROSOFT_LOGIN_PASSWORD"),
+    #     scopes=["User.Read"],
+    # )
+
+    # auth_flow = client_app.initiate_auth_code_flow(
+    #     scopes=["User.Read"],
+    #     redirect_uri="http://localhost:9090/api/callback",
+    # )
+
     # Exchange code for token
-    result = client_app.acquire_token_by_auth_code_flow(
-        auth_code_flow=auth_flow, auth_response={"code": code, "state": state}
+    token = client_app.acquire_token_by_auth_code_flow(
+        auth_code_flow=auth_flow,
+        auth_response={"code": code, "state": state},
     )
 
     # Clean up session state after use (security best practice)
     request.session.pop("oauth_state", None)
     request.session.pop("auth_flow", None)
 
-    if "error" in result:
+    if "error" in token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token exchange failed",  # Don't expose detailed error in production
         )
 
-    return result
+    return token
 
 
 app: FastAPI = FastAPI()

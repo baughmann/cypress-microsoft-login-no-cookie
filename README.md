@@ -32,3 +32,8 @@ to prevent CSRF. It generates a microsoft login URL that will re-direct them bac
   - `GET /api/auth/callback` - Handles the redirect from microsoft after login, verifies state, and exchanges code for token.
   - `GET /` - Serves the frontend app.
 - `client/` - Basic React frontend app that has a login button that hits the backend's `/api/login` endpoint.
+
+## Note about Playwright
+
+Please ignore some of the commented-out code in `backend/main.py`. Bypassing real auth is the only way to get
+the test to pass in Cypress. Playwright does not need this bypass and can use the real auth code flow.
